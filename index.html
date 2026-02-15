@@ -1,0 +1,65 @@
+<div id="mlbb-lobby" style="background: #0a0e14; border: 3px solid #4a90e2; width: 350px; padding: 20px; border-radius: 20px; font-family: 'Segoe UI', sans-serif; color: white; box-shadow: 0 0 30px #4a90e2;">
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-weight: bold; font-size: 1.2rem; color: #ffd700;">HERO: SHADOW MONARCH</div>
+        <div style="font-size: 0.8rem; color: #4a90e2;">RANK: <span id="rank-text">WARRIOR</span></div>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 0.7rem; margin-bottom: 3px;">HP (Reality Stability)</div>
+        <div style="width: 100%; height: 12px; background: #333; border-radius: 6px; overflow: hidden;">
+            <div id="hp-bar" style="width: 100%; height: 100%; background: #00ff00; transition: width 0.3s;"></div>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.7rem; margin-bottom: 3px;">MANA (Focus)</div>
+        <div style="width: 100%; height: 12px; background: #333; border-radius: 6px; overflow: hidden;">
+            <div id="mana-bar" style="width: 100%; height: 100%; background: #00d2ff; transition: width 0.3s;"></div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+        <button onclick="useSkill('S1')" style="width: 60px; height: 60px; border-radius: 50%; background: #222; border: 2px solid #00d2ff; color: #00d2ff; cursor: pointer;">S1</button>
+        <button onclick="useSkill('S2')" style="width: 60px; height: 60px; border-radius: 50%; background: #222; border: 2px solid #00d2ff; color: #00d2ff; cursor: pointer;">S2</button>
+        <button onclick="useSkill('ULTI')" style="width: 70px; height: 70px; border-radius: 50%; background: #222; border: 3px solid #ffd700; color: #ffd700; cursor: pointer;">ULTI</button>
+    </div>
+
+    <div id="battle-log" style="background: rgba(255,255,255,0.1); margin-top: 20px; padding: 10px; border-radius: 10px; font-size: 0.8rem; height: 40px; text-align: center;">
+        Welcome to the Land of Dawn.
+    </div>
+</div>
+
+<script>
+    let hp = 100;
+    let mana = 100;
+    let rankPoints = 0;
+    const ranks = ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic"];
+
+    function useSkill(skillType) {
+        if (mana >= 20) {
+            mana -= 20;
+            rankPoints += 10;
+            updateUI();
+            
+            let msg = skillType === "ULTI" ? "SAVAGE! Reality Synced!" : "Skill Hit! +10 Points";
+            document.getElementById('battle-log').innerText = msg;
+        } else {
+            document.getElementById('battle-log').innerText = "Low Mana! Rest needed.";
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('mana-bar').style.width = mana + "%";
+        let rankIdx = Math.floor(rankPoints / 50);
+        document.getElementById('rank-text').innerText = ranks[rankIdx] || "MYTHIC";
+    }
+
+    // Passive Mana Regen (Resting)
+    setInterval(() => {
+        if (mana < 100) {
+            mana += 2;
+            document.getElementById('mana-bar').style.width = mana + "%";
+        }
+    }, 2000);
+</script>
