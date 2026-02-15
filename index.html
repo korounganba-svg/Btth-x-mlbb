@@ -1,65 +1,98 @@
-<div id="mlbb-lobby" style="background: #0a0e14; border: 3px solid #4a90e2; width: 350px; padding: 20px; border-radius: 20px; font-family: 'Segoe UI', sans-serif; color: white; box-shadow: 0 0 30px #4a90e2;">
-    
-    <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-weight: bold; font-size: 1.2rem; color: #ffd700;">HERO: SHADOW MONARCH</div>
-        <div style="font-size: 0.8rem; color: #4a90e2;">RANK: <span id="rank-text">WARRIOR</span></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Monarch System</title>
+    <style>
+        /* CSS: The "Skins" and Colors */
+        body { background: #050505; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        #system-lobby { background: #0a0e14; border: 3px solid #4a90e2; width: 320px; padding: 20px; border-radius: 20px; color: white; box-shadow: 0 0 30px #4a90e2; text-align: center; }
+        .bar-container { width: 100%; height: 12px; background: #333; border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
+        #hp-bar { width: 100%; height: 100%; background: #00ff00; transition: width 0.3s; }
+        #mana-bar { width: 100%; height: 100%; background: #00d2ff; transition: width 0.3s; }
+        .skill-btn { width: 65px; height: 65px; border-radius: 50%; background: #111; border: 2px solid #00d2ff; color: #00d2ff; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .skill-btn:active { transform: scale(0.9); }
+        .ulti-btn { border-color: #ffd700; color: #ffd700; width: 75px; height: 75px; }
+        #battle-log { background: rgba(255,255,255,0.05); margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.8rem; min-height: 40px; color: #aaa; border: 1px solid #222; }
+    </style>
+</head>
+<body>
+
+<div id="system-lobby">
+    <div style="font-weight: bold; color: #ffd700; margin-bottom: 5px; letter-spacing: 2px;">SHADOW MONARCH</div>
+    <div style="font-size: 0.8rem; color: #4a90e2; margin-bottom: 15px;">RANK: <span id="rank-text">WARRIOR</span></div>
+
+    <div style="font-size: 0.7rem; text-align: left;">REALITY STABILITY (HP)</div>
+    <div class="bar-container"><div id="hp-bar"></div></div>
+
+    <div style="font-size: 0.7rem; text-align: left;">FOCUS (MANA)</div>
+    <div class="bar-container"><div id="mana-bar"></div></div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <button class="skill-btn" onclick="useSkill('S1')">S1</button>
+        <button class="skill-btn ulti-btn" onclick="useSkill('ULTI')">ULTI</button>
+        <button class="skill-btn" onclick="useSkill('S2')">S2</button>
     </div>
 
-    <div style="margin-bottom: 10px;">
-        <div style="font-size: 0.7rem; margin-bottom: 3px;">HP (Reality Stability)</div>
-        <div style="width: 100%; height: 12px; background: #333; border-radius: 6px; overflow: hidden;">
-            <div id="hp-bar" style="width: 100%; height: 100%; background: #00ff00; transition: width 0.3s;"></div>
-        </div>
+    <div style="margin-top: 15px; display: flex; gap: 5px; justify-content: center;">
+        <button onclick="recall()" style="background: #4a90e2; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 0.7rem; cursor: pointer; font-weight: bold;">RECALL</button>
+        <button onclick="buyItem('Athena\'s Shield')" style="background: #8e44ad; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 0.7rem; cursor: pointer; font-weight: bold;">🛡️ SHIELD</button>
     </div>
 
-    <div style="margin-bottom: 20px;">
-        <div style="font-size: 0.7rem; margin-bottom: 3px;">MANA (Focus)</div>
-        <div style="width: 100%; height: 12px; background: #333; border-radius: 6px; overflow: hidden;">
-            <div id="mana-bar" style="width: 100%; height: 100%; background: #00d2ff; transition: width 0.3s;"></div>
-        </div>
-    </div>
-
-    <div style="display: flex; justify-content: space-around; margin-top: 10px;">
-        <button onclick="useSkill('S1')" style="width: 60px; height: 60px; border-radius: 50%; background: #222; border: 2px solid #00d2ff; color: #00d2ff; cursor: pointer;">S1</button>
-        <button onclick="useSkill('S2')" style="width: 60px; height: 60px; border-radius: 50%; background: #222; border: 2px solid #00d2ff; color: #00d2ff; cursor: pointer;">S2</button>
-        <button onclick="useSkill('ULTI')" style="width: 70px; height: 70px; border-radius: 50%; background: #222; border: 3px solid #ffd700; color: #ffd700; cursor: pointer;">ULTI</button>
-    </div>
-
-    <div id="battle-log" style="background: rgba(255,255,255,0.1); margin-top: 20px; padding: 10px; border-radius: 10px; font-size: 0.8rem; height: 40px; text-align: center;">
-        Welcome to the Land of Dawn.
-    </div>
+    <div id="battle-log">System Initialized. Welcome back, Monarch.</div>
 </div>
 
 <script>
+    /* JavaScript: The Logic/Brains */
     let hp = 100;
     let mana = 100;
-    let rankPoints = 0;
+    let points = 0;
     const ranks = ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic"];
 
-    function useSkill(skillType) {
-        if (mana >= 20) {
-            mana -= 20;
-            rankPoints += 10;
+    function useSkill(type) {
+        if (mana >= 15) {
+            mana -= 15;
+            points += 10;
             updateUI();
-            
-            let msg = skillType === "ULTI" ? "SAVAGE! Reality Synced!" : "Skill Hit! +10 Points";
-            document.getElementById('battle-log').innerText = msg;
+            document.getElementById('battle-log').innerText = type === 'ULTI' ? "SAVAGE! Reality Overwritten!" : "Skill Hit! Focus Increased.";
         } else {
-            document.getElementById('battle-log').innerText = "Low Mana! Rest needed.";
+            document.getElementById('battle-log').innerText = "Low Mana! Use RECALL to ground yourself.";
+        }
+    }
+
+    function recall() {
+        document.getElementById('battle-log').innerText = "Recalling... Stand still for 3 seconds.";
+        setTimeout(() => {
+            hp = 100;
+            mana = 100;
+            updateUI();
+            document.getElementById('battle-log').innerText = "Status: Fully Restored. You are Synced.";
+        }, 3000);
+    }
+
+    function buyItem(item) {
+        if (points >= 50) {
+            points -= 50;
+            updateUI();
+            document.getElementById('battle-log').innerText = "Equipped " + item + "! Mental Defense UP.";
+        } else {
+            document.getElementById('battle-log').innerText = "Not enough Rank Points. Keep refining!";
         }
     }
 
     function updateUI() {
+        document.getElementById('hp-bar').style.width = hp + "%";
         document.getElementById('mana-bar').style.width = mana + "%";
-        let rankIdx = Math.floor(rankPoints / 50);
-        document.getElementById('rank-text').innerText = ranks[rankIdx] || "MYTHIC";
+        let rankIdx = Math.min(Math.floor(points / 50), 6);
+        document.getElementById('rank-text').innerText = ranks[rankIdx];
     }
 
-    // Passive Mana Regen (Resting)
+    // Passive Mana Regen
     setInterval(() => {
-        if (mana < 100) {
-            mana += 2;
-            document.getElementById('mana-bar').style.width = mana + "%";
-        }
+        if (mana < 100) { mana += 1; updateUI(); }
     }, 2000);
 </script>
+
+</body>
+</html>
